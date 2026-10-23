@@ -1,66 +1,158 @@
-// components/track/LogForm.tsx
-'use client';
-import React, { useState } from 'react';
+"use client";
 
-export default function LogForm() {
-  const [gas, setGas] = useState('None');
-  const [fatigue, setFatigue] = useState('None');
-  const [notes, setNotes] = useState('');
-  const [status, setStatus] = useState('');
+import { useState } from "react";
+import Link from "next/link";
+import { SYMPTOMS, SYMPTOM_LABELS, type Symptom } from "@/lib/symptoms";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('Saving...');
+type Props = {
+  onSaved: () => void;
+};
 
-    try {
-      const res = await fetch('/api/logs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          acidity_level: 'Checked via Widget',
-          gas_level: gas,
-          fatigue_level: fatigue,
-          notes
-        })
-      });
-      if (res.ok) {
-        setStatus('✅ लॉग सफलतापूर्वक सुरक्षित हुआ!');
-        setNotes('');
-      } else {
-        setStatus('❌ सेव करने में विफल (लॉगिन आवश्यक)');
-      }
-    } catch (err) {
-      setStatus('❌ इंटरनेट त्रुटि');
+export default function LogForm({ onSaved }: Props) {
+  const [picked, setPicked] = useState<Symptom[]>([]);
+  const [severity, setSeverity] = useState(3);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [safetyMessage, setSafetyMessage] = useState<string | null>(null);
+  const [needsConsent, setNeedsConsent] = useState(false);
+
+  function toggle(symptom: Symptom) {
+    setPicked((prev) =>
+      prev.includes(symptom) ? prev.filter((s) => s !== symptom) : [...prev, symptom]
+    );
+  }
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (picked.length === 0) {
+      setError("कम से कम एक लक्षण चुनें।");
+      return;
     }
-  };
+
+    setBusy(true);
+    setError(null);
+    setSafetyMessage(null);
+    setNeedsConsent(false);
+
+    const res = await fetch("/api/logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        symptoms: picked,
+        severity,
+        note: note.trim() || undefined,
+      }),
+    });
+
+    setBusy(false);
+
+    if (res.status === 403) {
+      setNeedsConsent(true);
+      return;
+    }
+    if (!res.ok) {
+      setError("Log save नहीं हो सका। दोबारा कोशिश करें।");
+      return;
+    }
+
+    const data = (await res.json()) as { message?: string };
+    if (data.message) {
+      setSafetyMessage(data.message);
+    }
+
+    setPicked([]);
+    setSeverity(3);
+    setNote("");
+    onSaved();
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-sm text-gray-700">
-      <div className="space-y-2">
-        <label className="font-medium text-xs uppercase tracking-wider text-gray-400 block">Gas / Bloating</label>
+    <form onSubmit={submit} className="space-y-5">
+      <fieldset>
+        <legend className="mb-2 text-sm font-medium">लक्षण</legend>
+        <div className="flex flex-wrap gap-2">
+          {SYMPTOMS.map((s) => {
+            const active = picked.includes(s);
+            return (
+              <button
+                key={s}
+                type="button"
+                aria-pressed={active}
+                onClick={() => toggle(s)}
+                className={`rounded-full border px-3 py-2 text-sm ${
+                  active ? "border-brand bg-brand text-white" : "border-neutral-300 bg-white"
+                }`}
+              >
+                {SYMPTOM_LABELS[s]}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="mb-2 text-sm font-medium">गंभीरता (1 = हल्का, 5 = तेज़)</legend>
         <div className="flex gap-2">
-          {['None', 'Mild', 'Severe'].map(l => (
-            <button type="button" key={l} onClick={() => setGas(l)} className={`flex-1 py-2 px-3 border rounded-xl font-medium shadow-sm transition-all ${gas === l ? 'bg-[#2C3E2B] text-white border-[#2C3E2B]' : 'bg-white border-gray-200'}`}>{l}</button>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              aria-pressed={severity === n}
+              onClick={() => setSeverity(n)}
+              className={`h-11 w-11 rounded-md border text-base ${
+                severity === n ? "border-brand bg-brand text-white" : "border-neutral-300 bg-white"
+              }`}
+            >
+              {n}
+            </button>
           ))}
         </div>
+      </fieldset>
+
+      <div>
+        <label htmlFor="note" className="block text-sm font-medium">
+          Note (वैकल्पिक, 280 अक्षर तक)
+        </label>
+        <textarea
+          id="note"
+          rows={3}
+          maxLength={280}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          className="mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2"
+        />
+        <p className="mt-1 text-xs text-neutral-600">यह note encrypted रहेगा।</p>
       </div>
 
-      <div className="space-y-2">
-        <label className="font-medium text-xs uppercase tracking-wider text-gray-400 block">Fatigue / Low Energy</label>
-        <div className="flex gap-2">
-          {['None', 'Mild', 'Severe'].map(l => (
-            <button type="button" key={l} onClick={() => setFatigue(l)} className={`flex-1 py-2 px-3 border rounded-xl font-medium shadow-sm transition-all ${fatigue === l ? 'bg-[#2C3E2B] text-white border-[#2C3E2B]' : 'bg-white border-gray-200'}`}>{l}</button>
-          ))}
-        </div>
-      </div>
+      {error ? (
+        <p role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
 
-      <div className="space-y-1">
-        <label className="font-medium text-xs uppercase tracking-wider text-gray-400 block">Additional Notes</label>
-        <textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="आज के खान-पान या स्वास्थ्य से जुड़ी कोई विशेष बात..." className="w-full border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-[#2C3E2B]" />
-      </div>
+      {safetyMessage ? (
+        <p role="alert" className="rounded-md bg-red-50 p-3 text-sm font-medium text-red-800">
+          {safetyMessage}
+        </p>
+      ) : null}
 
-      <button type="submit" className="w-full bg-[#2C3E2B] text-white py-3 rounded-xl font-medium hover:bg-[#1E3322] transition-all shadow-sm">Save Symptom Log</button>
-      {status && <p className="text-center text-xs text-gray-500 font-medium mt-1">{status}</p>}
+      {needsConsent ? (
+        <p className="rounded-md bg-neutral-100 p-3 text-sm">
+          Log save करने के लिए पहले अनुमति दें।{" "}
+          <Link href={`/consent?next=${encodeURIComponent("/track")}`} className="text-brand underline">
+            अनुमति दें
+          </Link>
+        </p>
+      ) : null}
+
+      <button
+        type="submit"
+        disabled={busy}
+        className="w-full rounded-md bg-brand px-4 py-3 text-base font-medium text-white disabled:opacity-60"
+      >
+        {busy ? "सेव हो रहा है..." : "आज का log सेव करें"}
+      </button>
     </form>
   );
 }
