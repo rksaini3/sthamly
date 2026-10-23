@@ -1,57 +1,111 @@
-// components/quiz/QuizClient.tsx
-'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
 
-const SAMPLE_QUESTIONS = [
-  { id: 1, text: "आपका शारीरिक ढांचा (Body Build) कैसा है?", options: [{ text: "दुबला-पतला, लंबा या बहुत छोटा", type: "vata" }, { text: "मध्यम, गठीला शरीर", type: "pitta" }, { text: "भारी, चौड़ा और मजबूत", type: "kapha" }] },
-  { id: 2, text: "आपकी त्वचा (Skin) कैसी रहती है?", options: [{ text: "रूखी, ठंडी, खुरदरी", type: "vata" }, { text: "तैलीय, संवेदनशील, गर्म", type: "pitta" }, { text: "सॉफ्ट, मोटी, थोड़ी नम", type: "kapha" }] },
-  { id: 3, text: "आपकी भूख और पाचन (Appetite) कैसा है?", options: [{ text: "अनियमित, कभी ज्यादा कभी कम", type: "vata" }, { text: "तेज भूख, सहन न होना", type: "pitta" }, { text: "धीमी लेकिन स्थिर भूख", type: "kapha" }] }
-];
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { QuizFile } from "@/lib/dosha/types";
+import { classify, RESULT_STORAGE_KEY, scoreAnswers } from "@/lib/dosha/scoring";
 
-export default function QuizClient() {
+export default function QuizClient({ quiz }: { quiz: QuizFile }) {
   const router = useRouter();
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [scores, setScores] = useState({ vata: 0, pitta: 0, kapha: 0 });
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
-  const handleAnswer = (type: 'vata' | 'pitta' | 'kapha') => {
-    const nextScores = { ...scores, [type]: scores[type] + 1 };
-    setScores(nextScores);
+  const total = quiz.questions.length;
+  const question = quiz.questions[index];
+  const selected = answers[question.id];
+  const isLast = index === total - 1;
 
-    if (currentIdx < SAMPLE_QUESTIONS.length - 1) {
-      setCurrentIdx(currentIdx + 1);
-    } else {
-      // परिणाम को लोकल स्टोरेज में रखें और रिजल्ट पेज पर भेजें
-      localStorage.setItem('sthamly_scores', JSON.stringify(nextScores));
-      router.push('/result');
+  function choose(optionId: string) {
+    setAnswers((prev) => ({ ...prev, [question.id]: optionId }));
+  }
+
+  function finish() {
+    const scores = scoreAnswers(quiz, answers);
+    const primary = classify(scores, quiz.scoring.dual_threshold_pct);
+
+    try {
+      localStorage.setItem(
+        RESULT_STORAGE_KEY,
+        JSON.stringify({
+          quiz_version: quiz.quiz_version,
+          scores,
+          primary_dosha: primary,
+        })
+      );
+    } catch {
+      // Storage can be blocked (private mode). The result page will then ask the user to retake the quiz.
     }
-  };
 
-  const progress = ((currentIdx + 1) / SAMPLE_QUESTIONS.length) * 100;
+    router.push("/result");
+  }
 
   return (
     <div className="space-y-6">
-      {/* प्रोग्रेस बार */}
-      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-        <div className="bg-[#2C3E2B] h-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+      <div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-brand-soft">
+          <div
+            className="h-2 rounded-full bg-brand transition-all"
+            style={{ width: `${((index + 1) / total) * 100}%` }}
+          />
+        </div>
+        <p className="mt-2 text-sm text-neutral-600">
+          सवाल {index + 1} / {total}
+        </p>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-serif font-bold text-[#1E3322] leading-snug">
-          {SAMPLE_QUESTIONS[currentIdx].text}
-        </h2>
-        
-        <div className="space-y-2">
-          {SAMPLE_QUESTIONS[currentIdx].options.map((opt, i) => (
+      <h1 className="text-xl font-semibold">{question.text}</h1>
+
+      <div className="space-y-3" role="radiogroup" aria-label={question.text}>
+        {question.options.map((option) => {
+          const active = selected === option.id;
+          return (
             <button
-              key={i}
-              onClick={() => handleAnswer(opt.type as any)}
-              className="w-full bg-white border border-gray-200 hover:border-[#2C3E2B] hover:bg-[#F2F7F4] text-left p-4 rounded-xl text-sm font-medium transition-all shadow-sm text-gray-700"
+              key={option.id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => choose(option.id)}
+              className={`w-full rounded-lg border px-4 py-3 text-left text-base ${
+                active
+                  ? "border-brand bg-brand-soft font-medium text-brand"
+                  : "border-neutral-300 bg-white"
+              }`}
             >
-              {opt.text}
+              {option.label}
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() => setIndex((i) => Math.max(0, i - 1))}
+          disabled={index === 0}
+          className="flex-1 rounded-md border border-brand px-4 py-3 text-brand disabled:opacity-40"
+        >
+          वापस
+        </button>
+
+        {isLast ? (
+          <button
+            type="button"
+            onClick={finish}
+            disabled={!selected}
+            className="flex-1 rounded-md bg-brand px-4 py-3 text-white disabled:opacity-40"
+          >
+            नतीजा देखें
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+            disabled={!selected}
+            className="flex-1 rounded-md bg-brand px-4 py-3 text-white disabled:opacity-40"
+          >
+            अगला
+          </button>
+        )}
       </div>
     </div>
   );
