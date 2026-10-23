@@ -1,14 +1,16 @@
 import { z } from "zod";
 
 const aiSchema = z.object({
-  OPENAI_API_KEY: z.string().min(1),
-  AI_MODEL: z.string().min(1).default("gpt-4o-mini"),
+  OPENROUTER_API_KEY: z.string().min(1),
+  OPENROUTER_MODEL: z.string().min(1).default("openai/gpt-4o-mini"),
+  NEXT_PUBLIC_SITE_URL: z.string().default("https://sthamly.com"),
 });
 
 // Server-only. Call from route handlers or server code, never from client components.
 export function aiEnv() {
   return aiSchema.parse({
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    AI_MODEL: process.env.AI_MODEL || undefined,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || undefined,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || undefined,
   });
 }
