@@ -1,25 +1,29 @@
-// components/auth/SignOutButton.tsx
-'use client';
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/browser';
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export default function SignOutButton() {
   const router = useRouter();
-  const supabase = createClient();
+  const [busy, setBusy] = useState(false);
 
-  const handleSignOut = async () => {
+  async function handleSignOut() {
+    setBusy(true);
+    const supabase = createSupabaseBrowserClient();
     await supabase.auth.signOut();
-    router.push('/');
+    router.replace("/login");
     router.refresh();
-  };
+  }
 
   return (
-    <button 
+    <button
+      type="button"
       onClick={handleSignOut}
-      className="w-full bg-white text-[#A81C1C] border border-[#FCAFAF] py-3 rounded-xl text-sm font-medium hover:bg-[#FFF0F0] transition-all shadow-sm"
+      disabled={busy}
+      className="rounded-md border border-brand px-4 py-2 text-sm font-medium text-brand disabled:opacity-60"
     >
-      Sign Out Account
+      {busy ? "Logout हो रहा है..." : "Logout"}
     </button>
   );
 }
