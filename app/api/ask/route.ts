@@ -1,57 +1,53 @@
-// app/api/ask/route.ts
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { askSchema } from "@/lib/validation";
+import { checkRedFlags } from "@/lib/safety/red-flags";
+import { answerFromApprovedContent } from "@/lib/ai/grounded-answer";
+import { AIError } from "@/lib/ai/client";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const supabase = createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  let body: unknown;
   try {
-    const supabase = await createClient();
-    
-    // 1. लॉग-इन सुरक्षा जांच (DPDP Act Compliance)
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: 'अनधिकृत (Unauthorized)' }, { status: 401 });
-    }
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
 
-    const { question } = await request.json();
-    if (!question) {
-      return NextResponse.json({ error: 'सवाल खाली नहीं हो सकता' }, { status: 400 });
-    }
+  const parsed = askSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "invalid_question" }, { status: 400 });
+  }
 
-    // 2. गंभीर लक्षण जांच (Red Flags Screening)
-    const urgentKeywords = ['chest pain', 'teez dard', 'severe bleeding', 'breathing problem', 'vomiting'];
-    const isUrgent = urgentKeywords.some(keyword => question.toLowerCase().includes(keyword));
-
-    if (isUrgent) {
-      return NextResponse.json({
-        answer: "⚠️ यह लक्षण गंभीर हो सकता है। Sthamly AI केवल सामान्य वैलनेस सलाह देता है। कृपया तुरंत नजदीकी डॉक्टर या BAMS/MD आयुर्वेदिक विशेषज्ञ से संपर्क करें।"
-      });
-    }
-
-    // 3. OpenRouter API कॉल
-    const response = await fetch("https://openrouter.ai", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-4o-mini", // किफायती और सटीक मॉडल
-        messages: [
-          { 
-            role: "system", 
-            content: "आप Sthamly ऐप के एक आयुर्वेदिक सहायक हैं। केवल खान-पान, योग और दिनचर्या से जुड़ी सामान्य वैलनेस सलाह दें। कोई पक्का मेडिकल दावा या डायग्नोसिस न करें।" 
-          },
-          { role: "user", content: question }
-        ]
-      })
+  // Safety check runs before any AI call.
+  const safety = checkRedFlags(parsed.data.question);
+  if (safety.flagged) {
+    return NextResponse.json({
+      status: "safety",
+      answer: safety.message,
+      sources: [],
     });
+  }
 
-    const aiData = await response.json();
-    const aiAnswer = aiData.choices?.[0]?.message?.content || "माफी चाहते हैं, AI प्रतिक्रिया जनरेट नहीं कर सका।";
-
-    return NextResponse.json({ answer: aiAnswer });
-
+  try {
+    const result = await answerFromApprovedContent(supabase, parsed.data.question);
+    return NextResponse.json(result);
   } catch (err) {
-    return NextResponse.json({ error: 'सर्वर एरर' }, { status: 500 });
+    // Never log the question: it may contain health information.
+    if (err instanceof AIError) {
+      return NextResponse.json({ error: "ai_unavailable" }, { status: 502 });
+    }
+    return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
