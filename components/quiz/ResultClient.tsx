@@ -1,60 +1,160 @@
-// components/quiz/ResultClient.tsx
-'use client';
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
 
-export default function ResultClient() {
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { RESULT_STORAGE_KEY } from "@/lib/dosha/scoring";
+import { DISCLAIMER, describe } from "@/lib/dosha/descriptions";
+import type { DoshaResult, Scores } from "@/lib/dosha/types";
+
+type StoredResult = {
+  quiz_version: string;
+  scores: Scores;
+  primary_dosha: DoshaResult;
+};
+
+type Props = {
+  loggedIn: boolean;
+  hasConsent: boolean;
+  autoSave: boolean;
+};
+
+const SAVE_PATH = "/result?save=1";
+
+export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) {
   const router = useRouter();
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<StoredResult | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const triedAutoSave = useRef(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('sthamly_scores');
-    if (!saved) {
-      router.push('/quiz');
+    try {
+      const raw = localStorage.getItem(RESULT_STORAGE_KEY);
+      setResult(raw ? (JSON.parse(raw) as StoredResult) : null);
+    } catch {
+      setResult(null);
+    }
+    setLoaded(true);
+  }, []);
+
+  async function save() {
+    if (!result) return;
+
+    if (!loggedIn) {
+      router.push(`/login?next=${encodeURIComponent(SAVE_PATH)}`);
+      return;
+    }
+    if (!hasConsent) {
+      router.push(`/consent?next=${encodeURIComponent(SAVE_PATH)}`);
       return;
     }
 
-    const scores = JSON.parse(saved);
-    let primary = 'Vata';
-    if (scores.pitta >= scores.vata && scores.pitta >= scores.kapha) primary = 'Pitta';
-    if (scores.kapha >= scores.vata && scores.kapha >= scores.pitta) primary = 'Kapha';
+    setSaving(true);
+    setError(null);
 
-    setResult({ scores, primary });
-
-    // बैकएंड सिंक (अगर लॉग-इन है)
-    fetch('/api/dosha-results', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/dosha-results", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // The schema requires consent: true. It is sent only after the consent screen.
       body: JSON.stringify({
-        vata_score: scores.vata,
-        pitta_score: scores.pitta,
-        kapha_score: scores.kapha,
-        primary_dosha: primary
-      })
-    }).catch(() => console.log('Offline/Unauthenticated save deferred'));
+        quiz_version: result.quiz_version,
+        scores: result.scores,
+        primary_dosha: result.primary_dosha,
+        consent: true,
+      }),
+    });
 
-  }, [router]);
+    if (!res.ok) {
+      setSaving(false);
+      setError("Result save नहीं हो सका। दोबारा कोशिश करें।");
+      return;
+    }
 
-  if (!result) return <p className="text-center text-sm text-gray-400">कैलकुलेट किया जा रहा है...</p>;
+    router.push("/plan");
+  }
+
+  // After login and consent, save once without another tap.
+  useEffect(() => {
+    if (autoSave && result && loggedIn && hasConsent && !triedAutoSave.current) {
+      triedAutoSave.current = true;
+      void save();
+    }
+    // save() reads the latest state through its closure on this render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSave, result, loggedIn, hasConsent]);
+
+  if (!loaded) {
+    return <p className="text-sm text-neutral-600">लोड हो रहा है...</p>;
+  }
+
+  if (!result) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-xl font-semibold">पहले quiz पूरा करें</h1>
+        <p className="text-sm text-neutral-700">
+          आपका result इस device पर नहीं मिला। Quiz दोबारा लें।
+        </p>
+        <Link href="/quiz" className="inline-block rounded-md bg-brand px-4 py-3 text-white">
+          Quiz शुरू करें
+        </Link>
+      </div>
+    );
+  }
+
+  const view = describe(result.primary_dosha);
 
   return (
-    <div className="space-y-6 text-center">
-      <div className="bg-[#EAF2EC] border border-[#D5E4DB] rounded-3xl p-8 max-w-sm mx-auto shadow-sm">
-        <span className="text-sm uppercase tracking-widest text-[#5B755E] font-bold">Your Primary Dosha</span>
-        <h2 className="text-5xl font-serif font-bold text-[#1E3322] mt-2 mb-4">{result.primary}</h2>
-        <p className="text-xs text-[#4A5E4C] leading-relaxed">
-          {result.primary === 'Pitta' && 'अग्नि और जल तत्वों से युक्त। आपका स्वभाव ऊर्जावान और पाचन तीव्र है। संतुलन बनाए रखने के लिए शीतलता आवश्यक है।'}
-          {result.primary === 'Vata' && 'वायु और आकाश तत्वों से युक्त। आपका स्वभाव गतिशील और रचनात्मक है। संतुलन के लिए स्थिरता और गर्माहट आवश्यक है।'}
-          {result.primary === 'Kapha' && 'पृथ्वी और जल तत्वों से युक्त। आपका स्वभाव शांत, स्थिर और सहनशील है। संतुलन के लिए सक्रियता आवश्यक है।'}
-        </p>
-      </div>
+    <div className="space-y-6">
+      <header>
+        <p className="text-sm text-neutral-600">आपकी profile</p>
+        <h1 className="text-2xl font-semibold text-brand">{view.title}</h1>
+        <p className="mt-1 text-neutral-700">{view.theme}</p>
+      </header>
 
-      <button 
-        onClick={() => router.push('/ask')}
-        className="w-full bg-[#2C3E2B] hover:bg-[#1E3322] text-white py-4 rounded-xl font-medium transition-all shadow-sm"
+      <section>
+        <h2 className="font-semibold">आपकी खूबियाँ</h2>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-neutral-800">
+          {view.traits.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="font-semibold">संतुलन के लिए छोटे सुझाव</h2>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-neutral-800">
+          {view.balance.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+      </section>
+
+      <p className="rounded-md bg-neutral-100 p-3 text-xs text-neutral-700">{DISCLAIMER}</p>
+
+      {error ? (
+        <p role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={save}
+        disabled={saving}
+        className="w-full rounded-md bg-brand px-4 py-3 text-base font-medium text-white disabled:opacity-60"
       >
-        See My Personalised Plan
+        {saving
+          ? "Plan बन रहा है..."
+          : loggedIn && hasConsent
+            ? "मेरा daily plan देखें"
+            : "Result save करें और plan देखें"}
       </button>
+
+      <Link href="/quiz" className="block text-center text-sm text-brand underline">
+        Quiz दोबारा लें
+      </Link>
     </div>
   );
 }
