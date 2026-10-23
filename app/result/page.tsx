@@ -1,19 +1,30 @@
-// app/result/page.tsx
-import React from 'react';
-import ResultClient from '@/components/quiz/ResultClient';
+import ResultClient from "@/components/quiz/ResultClient";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { hasActiveConsent } from "@/lib/consent";
 
-export default function ResultPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ResultPage({
+  searchParams,
+}: {
+  searchParams: { save?: string };
+}) {
+  const supabase = createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const hasConsent = user
+    ? await hasActiveConsent(supabase, user.id, "health_logging")
+    : false;
+
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-6 max-w-md mx-auto flex flex-col justify-between">
-      <div className="text-center pt-4">
-        <span className="text-xs uppercase tracking-widest text-gray-400 font-bold">Your Analysis</span>
-        <h1 className="text-3xl font-serif font-bold text-[#1E3322] mt-1">Prakriti Core</h1>
-      </div>
-
-      {/* क्लाइंट-साइड स्कोर और सेव लॉजिक */}
-      <div className="my-auto">
-        <ResultClient />
-      </div>
-    </div>
+    <main className="mx-auto min-h-screen max-w-md px-4 py-8">
+      <ResultClient
+        loggedIn={!!user}
+        hasConsent={hasConsent}
+        autoSave={searchParams.save === "1"}
+      />
+    </main>
   );
 }
