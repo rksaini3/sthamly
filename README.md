@@ -1,2 +1,0 @@
-# sthamly
-Sthamly Ayurveda PWA
