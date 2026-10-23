@@ -1,51 +1,80 @@
-// app/api/dosha-results/route.ts
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { doshaResultSchema } from "@/lib/validation";
+import { hasActiveConsent } from "@/lib/consent";
 
-// यूजर का पुराना दोष डेटा मंगाना (GET)
-export async function GET() {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-    const { data, error } = await supabase
-      .from('dosha_results')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
+// Saves the quiz result for the signed-in user.
+// The consent screen (next part) must grant "health_logging" before this works.
+export async function POST(request: Request) {
+  const supabase = createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (error) return NextResponse.json({ error: 'डेटा नहीं मिला' }, { status: 404 });
-    return NextResponse.json(data);
-  } catch (err) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  if (!user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+
+  if (!(await hasActiveConsent(supabase, user.id, "health_logging"))) {
+    return NextResponse.json({ error: "consent_required" }, { status: 403 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
+
+  const parsed = doshaResultSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "invalid_result" }, { status: 400 });
+  }
+
+  const { quiz_version, scores, primary_dosha } = parsed.data;
+
+  const { data, error } = await supabase
+    .from("dosha_results")
+    .insert({
+      user_id: user.id,
+      quiz_version,
+      scores,
+      primary_dosha,
+    })
+    .select("id")
+    .single();
+
+  if (error || !data) {
+    return NextResponse.json({ error: "save_failed" }, { status: 500 });
+  }
+
+  return NextResponse.json({ id: data.id }, { status: 201 });
 }
 
-// क्विज़ के बाद नया दोष डेटा सेव करना (POST)
-export async function POST(request: Request) {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+// Latest saved result for the signed-in user.
+export async function GET() {
+  const supabase = createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    const { vata_score, pitta_score, kapha_score, primary_dosha } = await request.json();
-
-    const { data, error } = await supabase
-      .from('dosha_results')
-      .upsert({
-        user_id: user.id,
-        vata_score,
-        pitta_score,
-        kapha_score,
-        primary_dosha,
-        updated_at: new Date().toISOString(),
-      })
-      .select();
-
-    if (error) return NextResponse.json({ error: 'सेव करने में विफल' }, { status: 400 });
-    return NextResponse.json({ message: 'सफलतापूर्वक सेव हुआ', data });
-  } catch (err) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  if (!user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+
+  const { data, error } = await supabase
+    .from("dosha_results")
+    .select("id, quiz_version, scores, primary_dosha, created_at")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    return NextResponse.json({ error: "load_failed" }, { status: 500 });
+  }
+
+  return NextResponse.json({ result: data });
 }
