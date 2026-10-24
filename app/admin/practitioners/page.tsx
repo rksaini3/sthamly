@@ -21,6 +21,8 @@ type Row = {
   is_listed: boolean;
   agreement_version: string | null;
   consult_fee_paise: number;
+  degree_doc_path: string | null;
+  registration_doc_path: string | null;
   created_at: string;
 };
 
@@ -35,7 +37,7 @@ export default async function PractitionersPage({
   const { data, error } = await db
     .from("practitioners")
     .select(
-      "id, display_name, qualification, registration_no, registration_council, verified, is_listed, agreement_version, consult_fee_paise, created_at"
+      "id, display_name, qualification, registration_no, registration_council, verified, is_listed, agreement_version, consult_fee_paise, degree_doc_path, registration_doc_path, created_at"
     )
     .order("created_at", { ascending: false });
 
@@ -67,6 +69,9 @@ export default async function PractitionersPage({
         <h1 className="text-2xl font-semibold text-brand">Practitioner verification</h1>
         <p className="mt-1 text-sm text-neutral-700">
           कुल {rows.length} · Pending: {pending}
+        </p>
+        <p className="mt-1 text-xs text-neutral-600">
+          Documents हर बार खोलने पर दर्ज होते हैं और link 2 मिनट में बंद हो जाता है।
         </p>
       </header>
 
@@ -108,6 +113,33 @@ export default async function PractitionersPage({
                 <span className="shrink-0 rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand">
                   {status}
                 </span>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                {p.degree_doc_path ? (
+                  <a
+                    href={`/admin/practitioners/doc?id=${p.id}&kind=degree`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand underline"
+                  >
+                    डिग्री देखें
+                  </a>
+                ) : (
+                  <span className="text-neutral-500">डिग्री नहीं मिली</span>
+                )}
+                {p.registration_doc_path ? (
+                  <a
+                    href={`/admin/practitioners/doc?id=${p.id}&kind=registration`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand underline"
+                  >
+                    Registration देखें
+                  </a>
+                ) : (
+                  <span className="text-neutral-500">Registration नहीं मिला</span>
+                )}
               </div>
 
               <form action={reviewPractitioner} className="mt-4 space-y-3">
