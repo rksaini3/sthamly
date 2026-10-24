@@ -1,21 +1,35 @@
-// app/offline/page.tsx
-import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ऑफ़लाइन",
+};
 
 export default function OfflinePage() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-6 max-w-md mx-auto text-center bg-[#FDFBF7]">
-      <div className="text-4xl mb-4">📴</div>
-      <h1 className="text-2xl font-serif font-bold text-[#1E3322] mb-2">You are Offline</h1>
-      <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-        Sthamly requires an internet connection to sync your daily AI updates. Showing cached guidelines.
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-10">
+      <h1 className="text-2xl font-semibold text-brand">आप ऑफ़लाइन हैं</h1>
+      <p className="mt-3 text-neutral-800">
+        इंटरनेट से जुड़ते ही यह पेज अपने-आप ठीक हो जाएगा। Quiz इंटरनेट के बिना भी दिया जा सकता है।
       </p>
-      
-      <div className="w-full bg-white p-4 rounded-xl border border-gray-200 text-left space-y-2 text-xs">
-        <p className="font-bold text-[#2C3E2B]">💡 General Dosha Reminder:</p>
-        <p>• **Vata:** Favour warm, cooked, grounding meals.</p>
-        <p>• **Pitta:** Favour cooling, sweet, and fresh foods.</p>
-        <p>• **Kapha:** Favour light, warm, and spicy items.</p>
+
+      <div className="mt-8 space-y-3">
+        <a
+          href="/quiz"
+          className="block rounded-md bg-brand px-4 py-3 text-center text-base font-medium text-white"
+        >
+          Quiz शुरू करें
+        </a>
+        <a
+          href="/"
+          className="block rounded-md border border-brand px-4 py-3 text-center text-base font-medium text-brand"
+        >
+          होम पेज पर जाएँ
+        </a>
       </div>
-    </div>
+
+      <p className="mt-10 text-xs text-neutral-600">
+        आपका निजी plan और logs ऑफ़लाइन नहीं दिखाए जाते, ताकि आपका data सुरक्षित रहे।
+      </p>
+    </main>
   );
 }
