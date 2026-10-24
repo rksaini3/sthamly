@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import JoinButton from "@/components/consult/JoinButton";
 import { addNote, setSessionOutcome } from "@/app/practitioner/sessions/actions";
 import { decryptField, fromPgBytea } from "@/lib/crypto";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -25,6 +26,10 @@ const ERROR_TEXT: Record<string, string> = {
   not_found: "Session नहीं मिला।",
   not_confirmed: "यह session अब बदला नहीं जा सकता।",
   not_started: "Session का समय अभी शुरू नहीं हुआ है।",
+  not_joinable: "इस session में अभी join नहीं किया जा सकता।",
+  not_in_window: "Video link session के समय के आसपास ही खुलता है।",
+  room_failed: "Video room नहीं खुल पाया। थोड़ी देर बाद दोबारा कोशिश करें।",
+  invalid: "कुछ गलत हुआ। दोबारा कोशिश करें।",
 };
 
 function openNote(value: string): string {
@@ -48,7 +53,9 @@ export default async function SessionDetailPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/login?next=${encodeURIComponent(`/practitioner/sessions/${params.consultId}`)}`);
+    redirect(
+      `/login?next=${encodeURIComponent(`/practitioner/sessions/${params.consultId}`)}`
+    );
   }
 
   if (!UUID_PATTERN.test(params.consultId)) notFound();
@@ -88,7 +95,9 @@ export default async function SessionDetailPage({
   const when = slot ? new Date(slot.starts_at) : null;
   const started = when ? when.getTime() <= Date.now() : false;
   const clientCode = consult.user_id.slice(0, 6).toUpperCase();
-  const errorText = searchParams.error ? ERROR_TEXT[searchParams.error] ?? ERROR_TEXT.save : null;
+  const errorText = searchParams.error
+    ? ERROR_TEXT[searchParams.error] ?? ERROR_TEXT.save
+    : null;
 
   return (
     <main className="mx-auto min-h-screen max-w-md space-y-8 px-4 py-8 pb-24">
@@ -117,6 +126,10 @@ export default async function SessionDetailPage({
         </p>
       ) : null}
 
+      {when && consult.status === "confirmed" ? (
+        <JoinButton consultationId={consult.id} startsAt={when.toISOString()} />
+      ) : null}
+
       {consult.status === "confirmed" && started ? (
         <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4">
           <h2 className="font-semibold">Session का परिणाम</h2>
@@ -140,7 +153,8 @@ export default async function SessionDetailPage({
             </button>
           </form>
           <p className="text-xs text-neutral-600">
-            "User नहीं आया" चुनने पर session की रकम आपके payout में जुड़ती है और refund नहीं होता।
+            &quot;User नहीं आया&quot; चुनने पर session की रकम आपके payout में जुड़ती है और refund
+            नहीं होता।
           </p>
         </section>
       ) : null}
