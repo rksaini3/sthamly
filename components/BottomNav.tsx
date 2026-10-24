@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { href: "/plan", label: "Plan" },
-  { href: "/track", label: "Track" },
+  { href: "/plan", label: "आज" },
+  { href: "/track", label: "लक्षण" },
   { href: "/ask", label: "पूछें" },
   { href: "/consult", label: "Consult" },
-  { href: "/profile", label: "Profile" },
+  { href: "/profile", label: "प्रोफ़ाइल" },
 ] as const;
 
 export default function BottomNav() {
@@ -17,7 +17,8 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="मुख्य मेन्यू"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
         {TABS.map((tab) => {
@@ -28,11 +29,19 @@ export default function BottomNav() {
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-[56px] items-center justify-center px-1 text-center text-xs font-medium ${
-                  active ? "text-brand" : "text-neutral-700"
-                }`}
+                className="relative flex min-h-[60px] items-center justify-center px-1 text-center"
               >
-                {tab.label}
+                {active ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-6 top-0 h-[3px] rounded-b-full bg-brand"
+                  />
+                ) : null}
+                <span
+                  className={`text-[13px] ${active ? "font-semibold text-brand" : "font-medium text-muted"}`}
+                >
+                  {tab.label}
+                </span>
               </Link>
             </li>
           );
