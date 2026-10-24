@@ -15,12 +15,14 @@ export type Weights = Partial<Record<Dosha, number>>;
 export type QuizOption = {
   id: string;
   label: string;
+  label_hi?: string;
   weights: Weights;
 };
 
 export type QuizQuestion = {
   id: string;
   text: string;
+  text_hi?: string;
   options: QuizOption[];
 };
 
