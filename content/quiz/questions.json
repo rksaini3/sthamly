@@ -1,0 +1,148 @@
+{
+  "quiz_version": "1.0",
+  "status": "draft — requires review by a BAMS/MD practitioner before release",
+  "scoring": {
+    "method": "Each chosen option adds its weights to the running totals. Total points per dosha are summed across all questions.",
+    "primary": "The dosha with the highest total.",
+    "blend": "If the top two totals are within 15% of the combined total of all three doshas, the result is a blend (e.g. vata_pitta).",
+    "dual_threshold_pct": 15,
+    "disclaimer": "This is a self-reflection tool based on traditional Ayurvedic categories. It is not a medical test."
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "text": "How would you describe your body frame?",
+      "options": [
+        { "id": "a", "label": "Lean and light; I find it hard to gain weight", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Medium build, athletic; moderate weight", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Solid and broad; I gain weight easily", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q02",
+      "text": "How is your skin usually?",
+      "options": [
+        { "id": "a", "label": "Dry, thin, rough or cracking", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Warm, sensitive, prone to redness or rashes", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Oily, thick, smooth or pale", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q03",
+      "text": "How is your appetite?",
+      "options": [
+        { "id": "a", "label": "Irregular; I sometimes forget to eat", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Strong; I get irritable when hungry", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Steady; I can easily skip meals", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q04",
+      "text": "How is your digestion?",
+      "options": [
+        { "id": "a", "label": "Gas, bloating or irregular bowels", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Acidity, heartburn or loose stools when stressed", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow; I feel heavy after meals", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q05",
+      "text": "How do you usually sleep?",
+      "options": [
+        { "id": "a", "label": "Light and broken; hard to fall asleep", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Moderate; I often wake up feeling hot or sweaty", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Deep and long; hard to wake up", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q06",
+      "text": "Which temperature do you prefer?",
+      "options": [
+        { "id": "a", "label": "Warm; I feel cold easily", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Cool; I feel heat easily", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Mild or warm; I feel sluggish in damp weather", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q07",
+      "text": "How is your energy through the day?",
+      "options": [
+        { "id": "a", "label": "Comes in bursts, then tires quickly", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Steady, intense and driven", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow to start, but steady endurance", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q08",
+      "text": "How do you usually react under stress?",
+      "options": [
+        { "id": "a", "label": "Anxious, restless, overthinking", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Irritable, impatient, critical", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Withdrawn; calm but stubborn", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q09",
+      "text": "How do you learn new things?",
+      "options": [
+        { "id": "a", "label": "Quick to learn, quick to forget", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Focused and sharp; I like to compete", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow to learn, but I remember well", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q10",
+      "text": "How is your hair?",
+      "options": [
+        { "id": "a", "label": "Dry, thin or frizzy", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Fine; early greying or thinning", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Thick, lustrous and wavy", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q11",
+      "text": "Which weather do you dislike most?",
+      "options": [
+        { "id": "a", "label": "Cold and windy", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Hot and sunny", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Damp and cold", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q12",
+      "text": "How much do you sweat?",
+      "options": [
+        { "id": "a", "label": "Little; my skin is mostly dry", "weights": { "vata": 2 } },
+        { "id": "b", "label": "A lot; I notice strong body odour", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Moderate; the sweat is cool", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q13",
+      "text": "How do you handle changes in plans?",
+      "options": [
+        { "id": "a", "label": "I adapt, but I change plans often", "weights": { "vata": 2 } },
+        { "id": "b", "label": "I decide quickly and push forward", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "I prefer routine and change slowly", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q14",
+      "text": "Which tastes do you crave most?",
+      "options": [
+        { "id": "a", "label": "Sweet, sour or salty", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Sweet, bitter or astringent", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Pungent, bitter or astringent", "weights": { "kapha": 2 } }
+      ]
+    },
+    {
+      "id": "q15",
+      "text": "How would friends describe your speech?",
+      "options": [
+        { "id": "a", "label": "Fast and talkative, with lots of ideas", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Clear, precise and assertive", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow, calm and measured", "weights": { "kapha": 2 } }
+      ]
+    }
+  ]
+}
