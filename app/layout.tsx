@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
         />
       </head>
-      <body className="min-h-screen bg-sand text-neutral-900 antialiased">
+     <body className="min-h-[100dvh] bg-canvas text-ink antialiased">
         <a href="#main" className="skip-link">
           मुख्य सामग्री पर जाएँ
         </a>
