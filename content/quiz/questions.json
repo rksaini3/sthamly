@@ -1,5 +1,5 @@
 {
-  "quiz_version": "1.0",
+  "quiz_version": "1.1",
   "status": "draft — requires review by a BAMS/MD practitioner before release",
   "scoring": {
     "method": "Each chosen option adds its weights to the running totals. Total points per dosha are summed across all questions.",
@@ -12,136 +12,151 @@
     {
       "id": "q01",
       "text": "How would you describe your body frame?",
+      "text_hi": "आपके शरीर की बनावट कैसी है?",
       "options": [
-        { "id": "a", "label": "Lean and light; I find it hard to gain weight", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Medium build, athletic; moderate weight", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Solid and broad; I gain weight easily", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Lean and light; I find it hard to gain weight", "label_hi": "पतला और हल्का; वज़न बढ़ाना मुश्किल लगता है", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Medium build, athletic; moderate weight", "label_hi": "मध्यम कद-काठी, फुर्तीला; वज़न सामान्य रहता है", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Solid and broad; I gain weight easily", "label_hi": "मज़बूत और चौड़ी कद-काठी; वज़न आसानी से बढ़ता है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q02",
       "text": "How is your skin usually?",
+      "text_hi": "आपकी त्वचा आमतौर पर कैसी रहती है?",
       "options": [
-        { "id": "a", "label": "Dry, thin, rough or cracking", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Warm, sensitive, prone to redness or rashes", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Oily, thick, smooth or pale", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Dry, thin, rough or cracking", "label_hi": "रूखी, पतली, खुरदरी या फटने वाली", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Warm, sensitive, prone to redness or rashes", "label_hi": "गर्म, संवेदनशील, जल्दी लाल होने या चकत्ते वाली", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Oily, thick, smooth or pale", "label_hi": "तैलीय, मोटी, चिकनी या पीली-सी", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q03",
       "text": "How is your appetite?",
+      "text_hi": "आपकी भूख कैसी रहती है?",
       "options": [
-        { "id": "a", "label": "Irregular; I sometimes forget to eat", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Strong; I get irritable when hungry", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Steady; I can easily skip meals", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Irregular; I sometimes forget to eat", "label_hi": "अनियमित; कभी-कभी खाना याद नहीं रहता", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Strong; I get irritable when hungry", "label_hi": "तेज़; भूख लगने पर चिड़चिड़ाहट होती है", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Steady; I can easily skip meals", "label_hi": "स्थिर; आसानी से भोजन छोड़ सकते हैं", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q04",
       "text": "How is your digestion?",
+      "text_hi": "आपका पाचन कैसा है?",
       "options": [
-        { "id": "a", "label": "Gas, bloating or irregular bowels", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Acidity, heartburn or loose stools when stressed", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Slow; I feel heavy after meals", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Gas, bloating or irregular bowels", "label_hi": "गैस, पेट फूलना या मल त्याग अनियमित रहना", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Acidity, heartburn or loose stools when stressed", "label_hi": "तनाव में एसिडिटी, सीने में जलन या पतले दस्त", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow; I feel heavy after meals", "label_hi": "धीमा; खाने के बाद भारीपन लगता है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q05",
       "text": "How do you usually sleep?",
+      "text_hi": "आप आमतौर पर कैसे सोते हैं?",
       "options": [
-        { "id": "a", "label": "Light and broken; hard to fall asleep", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Moderate; I often wake up feeling hot or sweaty", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Deep and long; hard to wake up", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Light and broken; hard to fall asleep", "label_hi": "हल्की और टूटी-टूटी नींद; नींद आने में देर लगती है", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Moderate; I often wake up feeling hot or sweaty", "label_hi": "सामान्य; अक्सर गर्मी या पसीने से नींद खुलती है", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Deep and long; hard to wake up", "label_hi": "गहरी और लंबी नींद; सुबह जागना मुश्किल लगता है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q06",
       "text": "Which temperature do you prefer?",
+      "text_hi": "आपको कौन-सा तापमान पसंद है?",
       "options": [
-        { "id": "a", "label": "Warm; I feel cold easily", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Cool; I feel heat easily", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Mild or warm; I feel sluggish in damp weather", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Warm; I feel cold easily", "label_hi": "गर्म; ठंड जल्दी लगती है", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Cool; I feel heat easily", "label_hi": "ठंडा; गर्मी जल्दी लगती है", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Mild or warm; I feel sluggish in damp weather", "label_hi": "सामान्य या गुनगुना; नम मौसम में सुस्ती लगती है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q07",
       "text": "How is your energy through the day?",
+      "text_hi": "दिन भर आपकी ऊर्जा कैसी रहती है?",
       "options": [
-        { "id": "a", "label": "Comes in bursts, then tires quickly", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Steady, intense and driven", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Slow to start, but steady endurance", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Comes in bursts, then tires quickly", "label_hi": "झटकों में आती है, फिर जल्दी थक जाते हैं", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Steady, intense and driven", "label_hi": "स्थिर, तेज़ और लक्ष्य की ओर केंद्रित", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow to start, but steady endurance", "label_hi": "शुरुआत धीमी, पर लंबे समय तक टिकती है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q08",
       "text": "How do you usually react under stress?",
+      "text_hi": "तनाव में आप आमतौर पर कैसे प्रतिक्रिया देते हैं?",
       "options": [
-        { "id": "a", "label": "Anxious, restless, overthinking", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Irritable, impatient, critical", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Withdrawn; calm but stubborn", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Anxious, restless, overthinking", "label_hi": "बेचैन, घबराहट, ज़्यादा सोचना", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Irritable, impatient, critical", "label_hi": "चिड़चिड़े, अधीर, आलोचनात्मक", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Withdrawn; calm but stubborn", "label_hi": "अकेले हो जाते हैं; शांत पर ज़िद्दी", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q09",
       "text": "How do you learn new things?",
+      "text_hi": "आप नई चीज़ें कैसे सीखते हैं?",
       "options": [
-        { "id": "a", "label": "Quick to learn, quick to forget", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Focused and sharp; I like to compete", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Slow to learn, but I remember well", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Quick to learn, quick to forget", "label_hi": "जल्दी सीखते हैं, पर जल्दी भूल भी जाते हैं", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Focused and sharp; I like to compete", "label_hi": "एकाग्र और तेज़; प्रतियोगिता पसंद है", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow to learn, but I remember well", "label_hi": "धीरे सीखते हैं, पर अच्छी तरह याद रहता है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q10",
       "text": "How is your hair?",
+      "text_hi": "आपके बाल कैसे हैं?",
       "options": [
-        { "id": "a", "label": "Dry, thin or frizzy", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Fine; early greying or thinning", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Thick, lustrous and wavy", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Dry, thin or frizzy", "label_hi": "रूखे, पतले या उलझे हुए", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Fine; early greying or thinning", "label_hi": "महीन; जल्दी सफ़ेद होना या पतला होना", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Thick, lustrous and wavy", "label_hi": "घने, चमकदार और लहरदार", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q11",
       "text": "Which weather do you dislike most?",
+      "text_hi": "कौन-सा मौसम आपको सबसे ज़्यादा नापसंद है?",
       "options": [
-        { "id": "a", "label": "Cold and windy", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Hot and sunny", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Damp and cold", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Cold and windy", "label_hi": "ठंडा और हवा वाला", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Hot and sunny", "label_hi": "गर्म और धूप वाला", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Damp and cold", "label_hi": "नम और ठंडा", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q12",
       "text": "How much do you sweat?",
+      "text_hi": "आपको कितना पसीना आता है?",
       "options": [
-        { "id": "a", "label": "Little; my skin is mostly dry", "weights": { "vata": 2 } },
-        { "id": "b", "label": "A lot; I notice strong body odour", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Moderate; the sweat is cool", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Little; my skin is mostly dry", "label_hi": "कम; त्वचा ज़्यादातर सूखी रहती है", "weights": { "vata": 2 } },
+        { "id": "b", "label": "A lot; I notice strong body odour", "label_hi": "बहुत; शरीर की तेज़ गंध महसूस होती है", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Moderate; the sweat is cool", "label_hi": "सामान्य; पसीना ठंडा लगता है", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q13",
       "text": "How do you handle changes in plans?",
+      "text_hi": "जब योजनाएँ बदलती हैं, तो आप कैसे निपटते हैं?",
       "options": [
-        { "id": "a", "label": "I adapt, but I change plans often", "weights": { "vata": 2 } },
-        { "id": "b", "label": "I decide quickly and push forward", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "I prefer routine and change slowly", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "I adapt, but I change plans often", "label_hi": "खुद को ढाल लेते हैं, पर योजनाएँ अक्सर बदलते हैं", "weights": { "vata": 2 } },
+        { "id": "b", "label": "I decide quickly and push forward", "label_hi": "जल्दी फ़ैसला लेकर आगे बढ़ते हैं", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "I prefer routine and change slowly", "label_hi": "नियमित दिनचर्या पसंद है; बदलाव धीरे अपनाते हैं", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q14",
       "text": "Which tastes do you crave most?",
+      "text_hi": "आपको किन स्वादों की चाह ज़्यादा होती है?",
       "options": [
-        { "id": "a", "label": "Sweet, sour or salty", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Sweet, bitter or astringent", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Pungent, bitter or astringent", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Sweet, sour or salty", "label_hi": "मीठा, खट्टा या नमकीन", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Sweet, bitter or astringent", "label_hi": "मीठा, कड़वा या कसैला", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Pungent, bitter or astringent", "label_hi": "तीखा, कड़वा या कसैला", "weights": { "kapha": 2 } }
       ]
     },
     {
       "id": "q15",
       "text": "How would friends describe your speech?",
+      "text_hi": "दोस्त आपके बोलने के बारे में क्या कहते हैं?",
       "options": [
-        { "id": "a", "label": "Fast and talkative, with lots of ideas", "weights": { "vata": 2 } },
-        { "id": "b", "label": "Clear, precise and assertive", "weights": { "pitta": 2 } },
-        { "id": "c", "label": "Slow, calm and measured", "weights": { "kapha": 2 } }
+        { "id": "a", "label": "Fast and talkative, with lots of ideas", "label_hi": "तेज़ और बातूनी, विचार बहुत होते हैं", "weights": { "vata": 2 } },
+        { "id": "b", "label": "Clear, precise and assertive", "label_hi": "साफ़, सटीक और दृढ़", "weights": { "pitta": 2 } },
+        { "id": "c", "label": "Slow, calm and measured", "label_hi": "धीमा, शांत और सोच-समझकर", "weights": { "kapha": 2 } }
       ]
     }
   ]
