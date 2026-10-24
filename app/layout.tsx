@@ -1,14 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_Devanagari } from "next/font/google";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
-
-const sans = Noto_Sans_Devanagari({
-  subsets: ["devanagari", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-sans",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sthamly.com"),
@@ -53,10 +45,23 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+// The Hindi font loads in the browser from Google Fonts, not during the build.
+// globals.css reads it through var(--font-sans).
+const fontVariables = {
+  "--font-sans": '"Noto Sans Devanagari", sans-serif',
+} as React.CSSProperties;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="hi" className={sans.variable}>
-      {/* font-sans is intentionally not set here: globals.css uses var(--font-sans) for body. */}
+    <html lang="hi" style={fontVariables}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        />
+      </head>
       <body className="min-h-screen bg-sand text-neutral-900 antialiased">
         <a href="#main" className="skip-link">
           मुख्य सामग्री पर जाएँ
