@@ -31,13 +31,15 @@ export async function hasActiveConsent(
   return (data ?? []).length > 0;
 }
 
+// Returns true when the consent is saved (or was already active).
+// Returns false on a database error, so the caller can answer with a clean message.
 export async function grantConsent(
   supabase: SupabaseClient,
   userId: string,
   purpose: ConsentPurpose
-): Promise<void> {
+): Promise<boolean> {
   if (await hasActiveConsent(supabase, userId, purpose)) {
-    return;
+    return true;
   }
 
   const { error } = await supabase.from("consents").insert({
@@ -46,16 +48,14 @@ export async function grantConsent(
     policy_version: CONSENT_VERSION,
   });
 
-  if (error) {
-    throw new Error("consent_save_failed");
-  }
+  return !error;
 }
 
 export async function revokeConsent(
   supabase: SupabaseClient,
   userId: string,
   purpose: ConsentPurpose
-): Promise<void> {
+): Promise<boolean> {
   const { error } = await supabase
     .from("consents")
     .update({ revoked_at: new Date().toISOString() })
@@ -63,7 +63,5 @@ export async function revokeConsent(
     .eq("purpose", purpose)
     .is("revoked_at", null);
 
-  if (error) {
-    throw new Error("consent_revoke_failed");
-  }
+  return !error;
 }
