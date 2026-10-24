@@ -1,28 +1,16 @@
-/* app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply text-[#2C3E2B] bg-[#FDFBF7];
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-  
-  h1, h2, h3, .font-serif {
-    font-family: 'Playfair Display', Georgia, serif;
-  }
+:root {
+  color-scheme: light;
 }
 
-/* कस्टम चेकबॉक्स और प्रोग्रेस बार स्टाइल */
-input[type="checkbox"] {
-  @apply rounded text-[#2C3E2B] focus:ring-[#2C3E2B] border-gray-300;
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #E5DEC9;
-  border-radius: 10px;
+/* No horizontal scroll on phones */
+body {
+  overflow-x: hidden;
 }
