@@ -1,10 +1,25 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PATHS = ["/plan", "/track", "/ask", "/profile"];
+// Pages that need a signed-in user. Each route still checks its own rules
+// (role, consent, verification). This is only the first gate.
+const PROTECTED_PATHS = [
+  "/plan",
+  "/track",
+  "/ask",
+  "/profile",
+  "/consent",
+  "/consult",
+  "/practitioner",
+  "/admin",
+];
+
+function isProtected(pathname: string): boolean {
+  return PROTECTED_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const response = NextResponse.next({ request: { headers: request.headers } });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,28 +30,26 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
   );
 
+  // Refreshes the session cookie when needed. Do not remove this call.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
-  const needsAuth = PROTECTED_PATHS.some((p) => path === p || path.startsWith(p + "/"));
+  const { pathname, search } = request.nextUrl;
 
-  if (needsAuth && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("next", path);
-    return NextResponse.redirect(url);
+  if (!user && isProtected(pathname)) {
+    const login = new URL("/login", request.url);
+    login.searchParams.set("next", `${pathname}${search}`);
+    return NextResponse.redirect(login);
   }
 
   return response;
@@ -44,6 +57,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sw.js|icons/|manifest.webmanifest|offline).*)",
+    // Skip static files, the service worker, manifest, icons and API routes.
+    // API routes check their own auth.
+    "/((?!_next/static|_next/image|api/|auth/|sw\\.js|manifest\\.webmanifest|icons/|favicon\\.ico).*)",
   ],
 };
