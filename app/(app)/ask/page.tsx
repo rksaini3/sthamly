@@ -1,29 +1,29 @@
-// app/(app)/ask/page.tsx
-import React from 'react';
-import AskBox from '@/components/ask/AskBox';
+import { redirect } from "next/navigation";
+import AskBox from "@/components/ask/AskBox";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default function AskPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AskPage() {
+  const supabase = createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(`/login?next=${encodeURIComponent("/ask")}`);
+  }
+
   return (
-    <div className="space-y-6">
-      {/* सुबह की ग्रीटिंग और दोष डिस्प्ले */}
-      <div>
-        <p className="text-sm text-gray-500 uppercase tracking-wider">Good morning</p>
-        <h1 className="text-3xl font-serif font-bold text-[#1E3322] mt-1">Your dosha: Pitta</h1>
-      </div>
-
-      {/* आज का ऑटोमेटेड प्लान समरी */}
-      <div className="bg-[#EAF2EC] p-5 rounded-2xl border border-[#D5E4DB]">
-        <h2 className="font-semibold text-lg text-[#1E3322] mb-2">Today's plan</h2>
-        <p className="text-sm text-[#4A5E4C] leading-relaxed">
-          Cooling lunch, moon walk, rose skincare
+    <main className="mx-auto min-h-screen max-w-md space-y-6 px-4 py-8 pb-24">
+      <header>
+        <h1 className="text-2xl font-semibold text-brand">Sthamly से पूछें</h1>
+        <p className="mt-1 text-sm text-neutral-700">
+          जवाब सिर्फ practitioner-approved content से मिलते हैं। हर जवाब अपना स्रोत भी बताता है।
         </p>
-      </div>
+      </header>
 
-      {/* AI वैद्या आस्क बॉक्स */}
-      <div className="space-y-3">
-        <h3 className="font-medium text-sm text-gray-600">Ask Sthamly AI Buddy</h3>
-        <AskBox />
-      </div>
-    </div>
+      <AskBox />
+    </main>
   );
 }
