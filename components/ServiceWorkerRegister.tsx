@@ -1,16 +1,16 @@
-// components/ServiceWorkerRegister.tsx
-'use client';
-import { useEffect } from 'react';
+"use client";
+
+import { useEffect } from "react";
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
-    if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((reg) => console.log('Sthamly PWA Service Worker Registered', reg.scope))
-        .catch((err) => console.error('Service Worker Registration Failed', err));
-    }
+    if (process.env.NODE_ENV !== "production") return;
+    if (!("serviceWorker" in navigator)) return;
+
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
+      // Registration can fail in private browsing. The app works online without it.
+    });
   }, []);
 
-  return null; // यह एक अदृश्य बैकग्राउंड यूटिलिटी कंपोनेंट है
+  return null;
 }
