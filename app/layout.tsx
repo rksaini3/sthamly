@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Devanagari } from "next/font/google";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const sans = Noto_Sans_Devanagari({
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           मुख्य सामग्री पर जाएँ
         </a>
         <div id="main">{children}</div>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
