@@ -6,15 +6,16 @@
 :root {
   --color-brand: #2f5d50;
   --color-brand-soft: #e8f0ec;
-  --color-sand: #fceedf;
-  --color-accent: #b5451b;
-  --color-text: #1f2421;
+  --color-canvas: #faf7f2;
+  --color-ink: #1f2421;
   --color-muted: #5b625e;
   --color-surface: #ffffff;
+  --color-line: #e7e3dc;
+  --color-accent: #b5451b;
   --color-danger: #b42318;
   --color-danger-soft: #fef3f2;
-  --radius-card: 0.75rem;
-  --tap-min: 44px;
+  --radius-card: 1rem;
+  --tap-min: 48px;
   color-scheme: light;
 }
 
@@ -27,8 +28,8 @@ html {
 
 body {
   margin: 0;
-  background-color: var(--color-sand);
-  color: var(--color-text);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
@@ -57,7 +58,7 @@ input[type="radio"] {
   touch-action: manipulation;
 }
 
-/* Only standalone buttons get the 44px tap target. Inline links keep their text flow. */
+/* Only standalone buttons get the tap target. Inline links keep their text flow. */
 button,
 [role="button"] {
   min-height: var(--tap-min);
@@ -66,7 +67,7 @@ button,
 :focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 /* ---------- Skip link (keyboard and screen readers) ---------- */
