@@ -58,7 +58,6 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
       const res = await fetch("/api/dosha-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Schema के लिए consent: true चाहिए। यह तभी भेजा जाता है जब consent screen पर सहमति हो चुकी हो।
         body: JSON.stringify({
           quiz_version: result.quiz_version,
           scores: result.scores,
@@ -68,7 +67,6 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
       });
 
       if (res.status === 403) {
-        // Consent अभी active नहीं है, इसलिए फिर से consent screen पर भेजें
         router.push(`/consent?next=${encodeURIComponent(SAVE_PATH)}`);
         return;
       }
@@ -78,31 +76,27 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
       router.push("/plan");
     } catch {
       setSaving(false);
-      setError("अभी सेव नहीं हो पाया। इंटरनेट जाँचें और एक बार फिर दबाएँ। आपका result इस device पर सुरक्षित है।");
+      setError("कुछ गड़बड़ हुई। फिर कोशिश करें।");
     }
   }
 
-  // Login और consent के बाद बिना एक और tap के अपने-आप सेव करें
+  // Login और consent के बाद अपने-आप सेव करें
   useEffect(() => {
     if (autoSave && result && loggedIn && hasConsent && !triedAutoSave.current) {
       triedAutoSave.current = true;
       void save();
     }
-    // save() हर render पर नए state के साथ बनता है, इसलिए इसे dependency में नहीं रखा
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoSave, result, loggedIn, hasConsent]);
 
   if (!loaded) {
-    return <p className="text-sm text-muted">लोड हो रहा है...</p>;
+    return <p className="text-muted">...</p>;
   }
 
   if (!result) {
     return (
-      <div className="space-y-5">
-        <h1 className="text-2xl font-semibold text-ink">पहले quiz पूरा करें</h1>
-        <p className="text-[15px] leading-relaxed text-muted">
-          आपका result इस device पर नहीं मिला। सिर्फ़ 2 मिनट में quiz दोबारा ले सकते हैं।
-        </p>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-semibold text-ink">पहले quiz लें</h1>
         <Link href="/quiz" className="btn-primary">
           Quiz शुरू करें
         </Link>
@@ -113,25 +107,24 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
   const view = describe(result.primary_dosha);
 
   const primaryLabel = saving
-    ? "आपका plan बन रहा है..."
+    ? "रुकें..."
     : loggedIn && hasConsent
-      ? "मेरा आज का plan देखें"
+      ? "Plan देखें"
       : loggedIn
-        ? "अनुमति देकर plan देखें"
-        : "Login करके plan सेव करें";
+        ? "सहमत होकर देखें"
+        : "Login करके सेव करें";
 
   return (
     <div className="space-y-8 pb-40">
       <header className="space-y-2">
-        <p className="eyebrow">आपकी प्रकृति</p>
         <h1 className="text-3xl font-semibold leading-tight text-brand">{view.title}</h1>
-        <p className="text-[15px] leading-relaxed text-muted">{view.theme}</p>
+        <p className="text-muted">{view.theme}</p>
       </header>
 
       <section className="card space-y-3">
-        <h2 className="text-base font-semibold text-ink">आपकी खूबियाँ</h2>
+        <h2 className="text-base font-semibold text-ink">आज के 3 सुझाव</h2>
         <ul className="space-y-2 text-[15px] text-ink">
-          {view.traits.map((t) => (
+          {view.balance.map((t) => (
             <li key={t} className="flex gap-3">
               <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
               <span>{t}</span>
@@ -140,26 +133,7 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
         </ul>
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-base font-semibold text-ink">संतुलन के लिए छोटे सुझाव</h2>
-        <ul className="space-y-2 text-[15px] text-ink">
-          {view.balance.map((t) => (
-            <li key={t} className="flex gap-3">
-              <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-              <span>{t}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="notice">
-        <p className="font-medium">आपका result इस device पर सुरक्षित है।</p>
-        <p className="mt-1 text-muted">
-          Login करने पर यह आपके account में जुड़ जाएगा, ताकि हर दिन का plan कहीं से भी दिखे।
-        </p>
-      </section>
-
-      <p className="text-xs leading-relaxed text-muted">{DISCLAIMER}</p>
+      <p className="text-center text-xs text-muted">{DISCLAIMER}</p>
 
       <div className="text-center">
         <Link href="/quiz" className="btn-link">
@@ -167,7 +141,6 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
         </Link>
       </div>
 
-      {/* नीचे sticky action bar: मुख्य कदम हमेशा पहुँच में */}
       <div
         className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 backdrop-blur"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}
@@ -183,7 +156,7 @@ export default function ResultClient({ loggedIn, hasConsent, autoSave }: Props) 
           </button>
           {!loggedIn ? (
             <Link href="/today" className="btn-link w-full text-muted">
-              बिना login के आज की सामान्य आदतें देखें →
+              पहले आज की आदतें देखें
             </Link>
           ) : null}
         </div>
