@@ -96,10 +96,10 @@ export default function BottomNav() {
         </div>
       </nav>
 
-      <Link
+     <Link
         href="/ask"
         aria-label="पूछें"
-        className="fixed left-1/2 z-50 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full shadow-lg"
+        className="fixed right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom) + 4.1rem)',
           background: 'var(--nav-active)',
