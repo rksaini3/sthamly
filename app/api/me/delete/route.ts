@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { RECORDS_BUCKET } from "@/lib/records";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,21 +48,40 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "cancel_subscription_first" }, { status: 409 });
   }
 
-  // 2. Delete health and preference data outright.
+  // 2. Medical report files come first. If a file cannot be removed, stop here so nothing is lost silently.
+  const { data: recordFiles, error: recordListError } = await admin
+    .from("medical_records")
+    .select("file_path")
+    .eq("user_id", uid);
+
+  if (recordListError) {
+    return NextResponse.json({ error: "delete_partial" }, { status: 500 });
+  }
+
+  const recordPaths = (recordFiles ?? []).map((r) => r.file_path as string);
+  if (recordPaths.length > 0) {
+    const { error: storageError } = await admin.storage.from(RECORDS_BUCKET).remove(recordPaths);
+    if (storageError) {
+      return NextResponse.json({ error: "delete_partial" }, { status: 500 });
+    }
+  }
+
+  // 3. Delete health and preference data outright.
   const removals = await Promise.all([
+    admin.from("medical_records").delete().eq("user_id", uid),
     admin.from("symptom_logs").delete().eq("user_id", uid),
     admin.from("daily_plans").delete().eq("user_id", uid),
     admin.from("dosha_results").delete().eq("user_id", uid),
     admin.from("consents").delete().eq("user_id", uid),
   ]);
 
-  // 3. Keep billing rows for legal retention, but remove the health text in them.
+  // 4. Keep billing rows for legal retention, but remove the health text in them.
   const billingScrub = await admin
     .from("consultations")
     .update({ concern_enc: null })
     .eq("user_id", uid);
 
-  // 4. Anonymise the profile. The row stays because billing rows point to it.
+  // 5. Anonymise the profile. The row stays because billing rows point to it.
   const profileScrub = await admin
     .from("profiles")
     .update({
@@ -72,7 +92,7 @@ export async function POST(request: Request) {
     })
     .eq("id", uid);
 
-  // 5. Remove the email and block login. Access tokens expire within an hour.
+  // 6. Remove the email and block login. Access tokens expire within an hour.
   const authScrub = await admin.auth.admin.updateUserById(uid, {
     email: `deleted-${uid}@deleted.invalid`,
     ban_duration: "876000h",
