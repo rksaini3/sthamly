@@ -8,7 +8,8 @@ export type ConsentPurpose =
   | "health_logging"
   | "consult_sharing"
   | "marketing"
-  | "practitioner_agreement";
+  | "practitioner_agreement"
+  | "medical_records";
 
 export async function hasActiveConsent(
   supabase: SupabaseClient,
