@@ -140,6 +140,11 @@
     border-radius: 6px;
   }
 
+  /* Top bar (back बटन) वाले पेज: ऊपर की जगह छोड़ें ताकि heading bar के नीचे रहे */
+  body.has-top-bar {
+    padding-top: calc(3.5rem + env(safe-area-inset-top));
+  }
+
   /* Bottom nav वाले पेज: नीचे की जगह छोड़ें ताकि content nav के पीछे न छुपे */
   body.has-bottom-nav {
     padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
