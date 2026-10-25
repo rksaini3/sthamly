@@ -26,6 +26,24 @@ export function decryptField(data: Buffer): string {
   return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString("utf8");
 }
 
+// Binary files (reports, X-rays). Output: iv (12) + tag (16) + data.
+export function encryptBytes(plain: Buffer): Buffer {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", getKey(), iv);
+  const encrypted = Buffer.concat([cipher.update(plain), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return Buffer.concat([iv, tag, encrypted]);
+}
+
+export function decryptBytes(data: Buffer): Buffer {
+  const iv = data.subarray(0, 12);
+  const tag = data.subarray(12, 28);
+  const encrypted = data.subarray(28);
+  const decipher = createDecipheriv("aes-256-gcm", getKey(), iv);
+  decipher.setAuthTag(tag);
+  return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+}
+
 // Postgres bytea goes over the API as a hex string with a \x prefix.
 export function toPgBytea(data: Buffer): string {
   return "\\x" + data.toString("hex");
