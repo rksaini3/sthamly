@@ -1,15 +1,24 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-// इन पेजों पर नीचे का nav (BottomNav) पहले से वापस जाने का बटन दिखाता है
-const HIDE_ON = ["/", "/plan", "/track", "/ask", "/profile"];
+// सिर्फ़ landing पर top bar नहीं दिखेगा
+const HIDE_ON = ["/"];
 
 export default function BackButton() {
   const pathname = usePathname() ?? "/";
   const router = useRouter();
+  const show = !HIDE_ON.includes(pathname);
 
-  if (HIDE_ON.includes(pathname)) return null;
+  // Bar की ऊँचाई जितनी जगह page के ऊपर छोड़ें, ताकि heading bar के नीचे से शुरू हो
+  useEffect(() => {
+    if (!show) return;
+    document.body.classList.add("has-top-bar");
+    return () => document.body.classList.remove("has-top-bar");
+  }, [show]);
+
+  if (!show) return null;
 
   function goBack() {
     if (window.history.length > 1) {
@@ -20,31 +29,35 @@ export default function BackButton() {
   }
 
   return (
-    <button
-      type="button"
-      onClick={goBack}
-      aria-label="वापस जाएँ"
-      className="fixed left-4 z-50 flex h-11 w-11 items-center justify-center rounded-full shadow active:scale-95"
+    <header
+      className="fixed inset-x-0 top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur"
       style={{
-        top: "calc(env(safe-area-inset-top) + 0.75rem)",
-        background: "var(--nav-bg)",
-        color: "var(--nav-active)",
-        border: "1px solid var(--nav-line)",
+        height: "calc(3.5rem + env(safe-area-inset-top))",
+        paddingTop: "env(safe-area-inset-top)",
       }}
     >
-      <svg
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M15 18l-6-6 6-6" />
-      </svg>
-    </button>
+      <div className="flex h-14 items-center px-4">
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label="वापस जाएँ"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-brand shadow-sm active:scale-95"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+      </div>
+    </header>
   );
 }
