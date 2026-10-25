@@ -56,16 +56,16 @@ export default async function PlanPage() {
 
   if (logError) throw new Error("plan_load_failed");
 
-  // Red-flag rule: if today's log has a flag, show the safety message instead of the plan.
+  // Red-flag rule: अगर आज के log में flag है, तो plan की जगह safety message दिखे
   const todayLogs = (recent ?? []).filter((r) => r.logged_on === today);
   if (todayLogs.some((r) => r.red_flag)) {
     return (
-      <main className="mx-auto min-h-screen max-w-md space-y-6 px-4 py-8">
-        <h1 className="text-xl font-semibold text-red-800">आज का plan अभी नहीं दिखाया जा सकता</h1>
-        <p role="alert" className="rounded-md bg-red-50 p-4 text-sm text-red-800">
+      <main className="mx-auto max-w-md space-y-6 px-5 pt-8">
+        <h1 className="text-2xl font-semibold text-red-800">आज का plan अभी नहीं दिखाया जा सकता</h1>
+        <p role="alert" className="error-box">
           {EMERGENCY_MESSAGE}
         </p>
-        <p className="text-sm text-neutral-700">
+        <p className="text-sm text-muted">
           अगर मन में खुद को नुकसान पहुँचाने के विचार हैं, तो Tele-MANAS को 14416 पर कॉल करें।
         </p>
       </main>
@@ -101,11 +101,11 @@ export default async function PlanPage() {
       return row ? [row] : [];
     });
     return { section, label: SECTION_LABELS[section], items };
-  });
+  }).filter((s) => s.items.length > 0);
 
   const ids = sections.flatMap((s) => s.items.map((i) => i.id));
 
-  // Save today's plan. Re-opening the page updates the same row.
+  // आज का plan सेव करें। पेज दोबारा खोलने पर वही row अपडेट होती है।
   await supabase.from("daily_plans").upsert(
     {
       user_id: user.id,
@@ -121,26 +121,46 @@ export default async function PlanPage() {
   const hasAnyItem = ids.length > 0;
 
   return (
-    <main className="mx-auto min-h-screen max-w-md space-y-6 px-4 py-8 pb-24">
-      <header>
-        <p className="text-sm text-neutral-600">आज का plan · {today}</p>
-        <h1 className="text-2xl font-semibold text-brand">{view.title}</h1>
-        <p className="text-sm text-neutral-700">{view.theme}</p>
+    <main className="mx-auto max-w-md space-y-8 px-5 pt-8">
+      <header className="space-y-1">
+        <p className="eyebrow">आज का plan · {today}</p>
+        <h1 className="text-3xl font-semibold leading-tight text-brand">{view.title}</h1>
+        <p className="text-[15px] text-muted">{view.theme}</p>
       </header>
 
-      {!hasAnyItem ? (
-        <p className="rounded-md bg-brand-soft p-4 text-sm text-brand">
-          आपके लिए आज का plan तैयार हो रहा है। Content को practitioner review के बाद यहाँ दिखाया जाएगा।
-        </p>
-      ) : (
+      {/* Check-in सबसे ऊपर: plan इसी से बदलता है */}
+      <Link href="/track" className="card flex items-center justify-between gap-4">
+        <span>
+          <span className="block text-base font-semibold text-ink">आज कैसा महसूस हो रहा है?</span>
+          <span className="mt-1 block text-sm text-muted">1 मिनट में दर्ज करें, plan उसी हिसाब से बदलेगा</span>
+        </span>
+        <span aria-hidden="true" className="text-2xl text-brand">
+          →
+        </span>
+      </Link>
+
+      {hasAnyItem ? (
         <PlanChecklist dateKey={today} sections={sections} />
+      ) : (
+        <section className="space-y-4">
+          <div className="card space-y-3">
+            <h2 className="text-base font-semibold text-ink">आज के लिए 3 छोटे सुझाव</h2>
+            <ul className="space-y-2 text-[15px] text-ink">
+              {view.balance.map((t) => (
+                <li key={t} className="flex gap-3">
+                  <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="notice text-muted">
+            पूरा plan (खाना, दिनचर्या, योग और त्वचा) एक योग्य practitioner की समीक्षा के बाद यहाँ जुड़ेगा। तब तक ये सुझाव आपके साथ हैं।
+          </p>
+        </section>
       )}
 
-      <p className="rounded-md bg-neutral-100 p-3 text-xs text-neutral-700">{DISCLAIMER}</p>
-
-      <Link href="/track" className="block text-center text-sm text-brand underline">
-        आज का लक्षण दर्ज करें
-      </Link>
+      <p className="text-xs leading-relaxed text-muted">{DISCLAIMER}</p>
     </main>
   );
 }
