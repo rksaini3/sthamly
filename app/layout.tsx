@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import BackButton from "@/components/BackButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,16 +46,20 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-// The Hindi font loads in the browser from Google Fonts, not during the build.
-// globals.css reads it through var(--font-sans).
-const fontVariables = {
-  "--font-sans": '"Noto Sans Devanagari", sans-serif',
-} as React.CSSProperties;
+// Dark mode की पसंद पेज खुलते ही लागू हो, ताकि हल्का रंग एक पल के लिए भी न दिखे।
+const themeScript = `
+try {
+  if (localStorage.getItem('sthamly:theme') === 'dark') {
+    document.documentElement.dataset.theme = 'dark';
+  }
+} catch (e) {}
+`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="hi" style={fontVariables}>
+    <html lang="hi">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -62,11 +67,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
         />
       </head>
-     <body className="min-h-[100dvh] bg-canvas text-ink antialiased">
+      <body className="min-h-[100dvh] bg-canvas text-ink antialiased">
         <a href="#main" className="skip-link">
           मुख्य सामग्री पर जाएँ
         </a>
         <div id="main">{children}</div>
+        <BackButton />
         <ServiceWorkerRegister />
       </body>
     </html>
