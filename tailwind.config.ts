@@ -20,6 +20,26 @@ const config: Config = {
         },
         // सफ़ेद को surface से जोड़ा है, ताकि dark mode में पुराने bg-white भी ठीक दिखें
         white: "rgb(var(--surface) / <alpha-value>)",
+        // लाल रंग की alerts भी theme के साथ बदलें
+        red: {
+          50: "rgb(var(--danger-soft) / <alpha-value>)",
+          200: "rgb(var(--danger-soft) / <alpha-value>)",
+          700: "rgb(var(--danger) / <alpha-value>)",
+          800: "rgb(var(--danger) / <alpha-value>)",
+        },
+        // neutral और gray, दोनों theme से जुड़े हैं, ताकि dark mode में text दिखे
+        neutral: {
+          50: "rgb(var(--gray-50) / <alpha-value>)",
+          100: "rgb(var(--gray-100) / <alpha-value>)",
+          200: "rgb(var(--gray-200) / <alpha-value>)",
+          300: "rgb(var(--gray-300) / <alpha-value>)",
+          400: "rgb(var(--gray-400) / <alpha-value>)",
+          500: "rgb(var(--gray-500) / <alpha-value>)",
+          600: "rgb(var(--gray-600) / <alpha-value>)",
+          700: "rgb(var(--gray-700) / <alpha-value>)",
+          800: "rgb(var(--gray-800) / <alpha-value>)",
+          900: "rgb(var(--gray-900) / <alpha-value>)",
+        },
         gray: {
           50: "rgb(var(--gray-50) / <alpha-value>)",
           100: "rgb(var(--gray-100) / <alpha-value>)",
