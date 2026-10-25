@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import TrackClient from "@/components/track/TrackClient";
 import { hasActiveConsent } from "@/lib/consent";
@@ -21,6 +22,9 @@ export default async function TrackPage() {
 
   return (
     <main className="mx-auto min-h-screen max-w-md space-y-8 px-4 py-8 pb-24">
+      <Link href="/insights" className="card block font-medium text-brand">
+        इस हफ़्ते का balance →
+      </Link>
       <TrackClient />
     </main>
   );
