@@ -1,8 +1,33 @@
 // app/page.tsx
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function LandingPage() {
+  const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    // Supabase login के बाद ?code= यहीं आए तो उसे callback route पर भेज दें
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('code')) {
+        setRedirecting(true);
+        window.location.replace(`/auth/callback${window.location.search}`);
+      }
+    } catch {
+      // कुछ browsers में URL पढ़ने में दिक्कत हो तो landing ही दिखेगा
+    }
+  }, []);
+
+  if (redirecting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7] text-[#2C3E2B]">
+        लॉगिन हो रहा है...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col justify-between p-6 max-w-md mx-auto bg-[#FDFBF7]">
       {/* हेडर / लोगो */}
