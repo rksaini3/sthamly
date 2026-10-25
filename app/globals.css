@@ -1,4 +1,6 @@
-/* ===== Bottom nav, मेनू और dark mode ===== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;/* ===== Bottom nav, मेनू और dark mode ===== */
 :root {
   --nav-bg: #ffffff;
   --nav-line: #e5e7eb;
