@@ -43,12 +43,11 @@ export default function PlanChecklist({
 
   return (
     <div className="space-y-8">
-      {/* Progress: छोटी जीत दिखे तो लोग लौटते हैं */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-ink">आज का progress</span>
+          <span className="text-muted">आज</span>
           <span className="font-medium text-brand">
-            {doneCount} / {total} पूरे
+            {doneCount} / {total}
           </span>
         </div>
         <div
@@ -82,7 +81,7 @@ export default function PlanChecklist({
                     </span>
                   </label>
                   <details className="mt-3 pl-8 text-sm text-muted">
-                    <summary className="cursor-pointer text-brand">विवरण देखें</summary>
+                    <summary className="cursor-pointer text-brand">और पढ़ें</summary>
                     <p className="mt-2 whitespace-pre-line leading-relaxed text-ink/80">{item.body_md}</p>
                   </details>
                 </li>
