@@ -6,7 +6,7 @@ import { CONSENT_VERSION, grantConsent, hasActiveConsent } from "@/lib/consent";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const PURPOSES = ["health_logging", "consult_sharing", "marketing"] as const;
+const PURPOSES = ["health_logging", "consult_sharing", "marketing", "medical_records"] as const;
 
 const bodySchema = z.object({
   purpose: z.enum(PURPOSES),
