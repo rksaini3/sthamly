@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import MenuDrawer from './MenuDrawer';
 
@@ -46,11 +46,6 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
     </svg>
   ),
-  back: (
-    <svg {...svgProps}>
-      <path d="M15 18l-6-6 6-6" />
-    </svg>
-  ),
 };
 
 const TABS = [
@@ -62,7 +57,6 @@ const TABS = [
 
 export default function BottomNav() {
   const pathname = usePathname() ?? '';
-  const router = useRouter();
 
   useEffect(() => {
     // page के नीचे जगह छोड़ें ताकि nav के पीछे content न छुपे
@@ -72,32 +66,8 @@ export default function BottomNav() {
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-  function goBack() {
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push('/plan');
-    }
-  }
-
   return (
     <>
-      {/* ऊपर बाईं ओर वापस जाने का बटन */}
-      <button
-        type="button"
-        onClick={goBack}
-        aria-label="वापस जाएँ"
-        className="fixed left-4 z-50 flex h-11 w-11 items-center justify-center rounded-full shadow active:scale-95"
-        style={{
-          top: 'calc(env(safe-area-inset-top) + 0.75rem)',
-          background: 'var(--nav-bg)',
-          color: 'var(--nav-active)',
-          border: '1px solid var(--nav-line)',
-        }}
-      >
-        {ICONS.back}
-      </button>
-
       <nav
         aria-label="मुख्य मेनू"
         className="fixed inset-x-0 bottom-0 z-40 border-t"
