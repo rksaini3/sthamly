@@ -1,14 +1,19 @@
-// app/page.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+const DOSHAS = [
+  { name: 'Vata', hi: 'वात', line: 'हल्का और रचनात्मक' },
+  { name: 'Pitta', hi: 'पित्त', line: 'ऊर्जावान और फोकस' },
+  { name: 'Kapha', hi: 'कफ', line: 'शांत और स्थिर' },
+];
 
 export default function LandingPage() {
   const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    // Supabase login के बाद ?code= यहीं आए तो उसे callback route पर भेज दें
+    // Login के बाद ?code= यहाँ आए तो callback पर भेज दें
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.has('code')) {
@@ -16,45 +21,58 @@ export default function LandingPage() {
         window.location.replace(`/auth/callback${window.location.search}`);
       }
     } catch {
-      // कुछ browsers में URL पढ़ने में दिक्कत हो तो landing ही दिखेगा
+      // URL न पढ़ सकें तो landing ही दिखेगा
     }
   }, []);
 
   if (redirecting) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7] text-[#2C3E2B]">
-        लॉगिन हो रहा है...
+      <div className="flex min-h-[100dvh] items-center justify-center bg-canvas">
+        <p className="text-muted">लॉग इन हो रहा है...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-6 max-w-md mx-auto bg-[#FDFBF7]">
-      {/* हेडर / लोगो */}
-      <div className="pt-12 text-center">
-        <h1 className="text-4xl font-serif font-bold text-[#1E3322] tracking-wide">Sthamly</h1>
-        <p className="text-xs text-[#5B755E] tracking-widest uppercase mt-2">Est. 2026</p>
-      </div>
-
-      {/* मुख्य वैल्यू प्रपोजिशन */}
-      <div className="space-y-4 text-center my-auto">
-        <h2 className="text-2xl font-serif text-[#2C3E2B] leading-tight">
-          Ayurveda, personalised.
-        </h2>
-        <p className="text-sm text-gray-600 leading-relaxed px-4">
-          Find your unique Prakriti and unlock a tailored daily dosha plan for your food, routine, yoga, and skincare.
-        </p>
-      </div>
-
-      {/* एक्शन बटन */}
-      <div className="space-y-3 pb-8">
-        <Link href="/quiz" className="block w-full bg-[#2C3E2B] hover:bg-[#1E3322] text-white text-center font-medium py-4 px-6 rounded-xl transition-all shadow-sm">
-          Find Your Dosha (Take Quiz)
+    <main id="main" className="mx-auto flex min-h-[100dvh] max-w-md flex-col px-5 pb-36 pt-10">
+      <header className="flex items-center justify-between">
+        <span className="wordmark text-2xl">Sthamly</span>
+        <Link href="/login" className="btn-link">
+          लॉग इन
         </Link>
-        <Link href="/login" className="block w-full bg-white hover:bg-gray-50 text-[#2C3E2B] text-center font-medium py-4 px-6 rounded-xl border border-gray-200 transition-all shadow-sm">
-          Sign In to My Account
-        </Link>
+      </header>
+
+      <section className="mt-16 space-y-3">
+        <h1 className="text-4xl font-semibold leading-tight text-ink">अपनी प्रकृति जानें</h1>
+        <p className="text-lg text-muted">2 मिनट में। रोज़ का सरल plan।</p>
+      </section>
+
+      <section className="mt-12 space-y-3">
+        {DOSHAS.map((d) => (
+          <div key={d.name} className="card flex items-center justify-between p-4">
+            <span className="font-semibold text-ink">
+              {d.name} <span className="font-normal text-muted">· {d.hi}</span>
+            </span>
+            <span className="text-sm text-muted">{d.line}</span>
+          </div>
+        ))}
+      </section>
+
+      <p className="mt-10 text-xs text-muted">सिर्फ़ wellness के लिए। medical test नहीं।</p>
+
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 backdrop-blur"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
+      >
+        <div className="mx-auto max-w-md space-y-1 px-5 pt-3">
+          <Link href="/quiz" className="btn-primary">
+            शुरू करें
+          </Link>
+          <Link href="/today" className="btn-link w-full text-muted">
+            पहले आज की आदतें देखें
+          </Link>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
