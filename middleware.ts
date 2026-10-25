@@ -8,6 +8,7 @@ const PROTECTED_PATHS = [
   "/track",
   "/ask",
   "/profile",
+  "/records",
   "/consent",
   "/consult",
   "/practitioner",
