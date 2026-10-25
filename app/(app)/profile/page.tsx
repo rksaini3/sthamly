@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import ProfileActions from "@/components/profile/ProfileActions";
 import { CONSENT_VERSION, hasActiveConsent } from "@/lib/consent";
@@ -41,6 +42,10 @@ export default async function ProfilePage() {
           </div>
         </dl>
       </header>
+
+      <Link href="/records" className="card block font-medium text-brand">
+        मेरी reports →
+      </Link>
 
       <ProfileActions
         policyVersion={CONSENT_VERSION}
